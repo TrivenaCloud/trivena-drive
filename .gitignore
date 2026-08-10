@@ -1,0 +1,14 @@
+.DS_Store
+*.pyc
+*.egg-info
+*.swp
+tags
+**/node_modules
+**/dist/
+**/__pycache__
+drive/public/frontend
+drive/www/drive.html
+experiments/*
+*log.json
+.env
+build/

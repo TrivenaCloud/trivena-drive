@@ -1,0 +1,50 @@
+[project]
+name = "trivena_drive"
+authors = [
+    { name = "khadeem100", email = "137840943+khadeem100@users.noreply.github.com" }
+]
+description = "Private encrypted file drive for Trivena Cloud"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "av>=12.0.0",
+    "mimemapper==0.4.1",
+    "pymupdf>=1.24.0",
+    "boto3~=1.43.29",
+    "pycrdt==0.12.26",
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+use_parentheses = true
+ensure_newline_before_comments = true
+
+# press reads this on install
+[deploy.dependencies.apt]
+packages = [
+    "ffmpeg",
+]
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0-dev,<=17.0.0-dev"
+
+[tool.bench.assets]
+build_dir = "./frontend"
+out_dir = "../drive/public/frontend"
+index_html_path = "../drive/www/drive.html"
+
+[project.urls]
+Homepage = "https://trivena.io/drive"
+Documentation = "https://docs.trivena.io/drive"
+Repository = "https://github.com/TrivenaCloud/trivena-drive.git"
+"Bug Reports" = "https://github.com/TrivenaCloud/trivena-drive/issues"

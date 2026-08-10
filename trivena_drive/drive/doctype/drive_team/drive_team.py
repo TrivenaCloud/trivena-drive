@@ -1,0 +1,74 @@
+# Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+import shutil
+from pathlib import Path
+
+import trivena_framework as trivena
+from trivena_framework.model.document import Document
+
+from trivena_drive.utils import get_home_folder
+from trivena_drive.utils.files import get_s3_url, storage_key
+
+
+class DriveTeam(Document):
+    def after_insert(self):
+        """Creates the file on disk"""
+        d = trivena.get_doc(
+            {
+                "name": self.name,
+                "doctype": "File",
+                "file_name": f"Drive - {self.name}",
+                "file_url": "",
+                "is_folder": 1,
+                "team": self.name,
+            }
+        )
+        d.insert()
+
+        self.append("users", {"user": trivena.session.user, "access_level": 2})
+        self.save()
+
+        settings = trivena.get_single("Drive Disk Settings")
+        root_folder: str
+        if self.s3_bucket:
+            root_folder = self.prefix or ""
+        else:
+            root_folder = (
+                Path(settings.root_folder)
+                / {
+                    settings.team_prefix == "team_id": self.name + "/",
+                    settings.team_prefix == "team_name": f"{self.title} ({trivena.session.user})/",
+                    settings.team_prefix == "none": "",
+                }[True]
+            )
+        # file_url is the backend storage key (see storage_key/get_disk_path):
+        # an S3 fetch URL for remote, else the on-disk path under private/files.
+        d.file_url = get_s3_url(str(root_folder)) if self.s3_bucket else "/private/files/" + str(root_folder)
+        d.save()
+
+        # Create even with S3 as we need local folders before uploading to S3
+        user_directory_path = Path(trivena.get_site_path("private/files")) / root_folder
+        user_directory_path.mkdir(exist_ok=True, parents=True)  # allows prefixes to be nested
+        (user_directory_path / ".uploads").mkdir(exist_ok=True)
+        (user_directory_path / settings.thumbnail_prefix).mkdir(exist_ok=True)
+        if settings.flat:
+            (user_directory_path / "embeds").mkdir(exist_ok=True)
+
+    def on_trash(self):
+        user_settings = trivena.get_list("Drive Settings", {"default_team": self.name}, pluck=["name"])
+        for s in user_settings:
+            d = trivena.get_doc("Drive Settings", s)
+            d.default_team = ""
+            d.save()
+        trivena.db.commit()
+
+        try:
+            site_dir = Path(trivena.get_site_path())
+            files_dir = site_dir / "private" / "files"
+            user_directory_path = site_dir / storage_key(get_home_folder(self.name).file_url)
+            if user_directory_path != files_dir:
+                shutil.rmtree(str(user_directory_path))
+            trivena.db.delete("File", {"team": self.name})
+        except:
+            pass

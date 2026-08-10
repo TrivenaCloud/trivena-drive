@@ -1,0 +1,245 @@
+from . import __version__ as app_version
+
+app_name = "trivena_drive"
+app_title = "Trivena Drive"
+app_publisher = "Trivena Cloud"
+app_description = "Private encrypted file drive for Trivena Cloud"
+app_icon = "octicon octicon-file-directory"
+app_color = "grey"
+app_email = "cloud@tynktech.nl"
+app_license = "GNU Affero General Public License v3.0"
+
+website_route_rules = [
+    {"from_route": "/drive/<path:app_path>", "to_route": "trivena_drive"},
+]
+
+add_to_apps_screen = [
+    {
+        "name": "trivena_drive",
+        "logo": "/assets/trivena_drive/frontend/favicon-310x310.png",
+        "title": "Trivena Drive",
+        "route": "/drive",
+        "has_permission": "drive.api.product.access_app",
+    }
+]
+
+# Includes in <head>
+# ------------------
+
+# include js, css files in header of desk.html
+# app_include_css = "/assets/trivena_drive/css/drive.css"
+app_include_js = "ff_integration.bundle.js"
+
+# include js, css files in header of web template
+# web_include_css = "/assets/trivena_drive/css/drive.css"
+# web_include_js = "/assets/trivena_drive/js/drive.js"
+
+# include custom scss in every website theme (without file extension ".scss")
+# website_theme_scss = "drive/public/scss/website"
+
+# include js, css files in header of web form
+# webform_include_js = {"doctype": "public/js/doctype.js"}
+# webform_include_css = {"doctype": "public/css/doctype.css"}
+
+# include js in page
+# page_js = {"page" : "public/js/file.js"}
+
+# include js in doctype views
+doctype_js = {"doctype" : "public/js/file.js"}
+# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
+# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+
+# Home Pages
+# ----------
+
+# application home page (will override Website Settings)
+# home_page = "trivena_drive"
+
+# website user home page (by Role)
+# role_home_page = {
+# 	"Role": "home_page"
+# }
+
+# Generators
+# ----------
+
+# automatically create page for each record of this doctype
+# website_generators = ["Web Page"]
+
+# Jinja
+# ----------
+
+# add methods and filters to jinja environment
+# jinja = {
+# 	"methods": "drive.utils.jinja_methods",
+# 	"filters": "drive.utils.jinja_filters"
+# }
+
+# Installation
+# ------------
+
+# before_install = "drive.install.before_install"
+after_install = "drive.install.after_install"
+
+# Uninstallation
+# ------------
+
+# before_uninstall = "drive.uninstall.before_uninstall"
+# after_uninstall = "drive.uninstall.after_uninstall"
+
+# Desk Notifications
+# ------------------
+# See trivena.core.notifications.get_notification_config
+
+# notification_config = "drive.notifications.get_notification_config"
+# Permissions
+# -----------
+# Permissions evaluated in scripted ways
+
+permission_query_conditions = {
+    "Drive Team": "drive.utils.overrides.filter_drive_team",
+    "Drive Permission": "drive.utils.overrides.filter_drive_permission",
+    "Drive Favourite": "drive.utils.overrides.filter_drive_favourite",
+    "Drive Entity Log": "drive.utils.overrides.filter_drive_recent",
+    "Drive Notification": "drive.utils.overrides.filter_drive_notif",
+}
+
+has_permission = {
+    "File": "drive.api.permissions.user_has_permission",
+}
+
+after_upload_file = "drive.overrides.file.after_upload_file"
+# write_file = 'drive.overrides.file.write_file'
+# DocType Class
+# ---------------
+# Override standard doctype classes
+
+override_doctype_class = {
+	"File": "drive.overrides.file.File"
+}
+
+# Document Events
+# ---------------
+# Hook on document methods and events
+
+doc_events = {
+    "Presentation": {
+        "on_update": "drive.api.integration.presentation",
+        "on_trash": "drive.api.integration.presentation",
+    },
+    "User": {
+		"after_insert": "drive.utils.users.assign_drive_role_and_create_settings",
+	}
+}
+
+
+fixtures = [
+    # Drive bolts its fields onto the framework File doctype; without this the
+    # custom_field.json / role.json fixtures never sync to other sites.
+    {"dt": "Custom Field", "filters": [["dt", "=", "File"]]},
+    # Desk-form tweaks for the framework File form (Drive folder + file_url fields).
+    {"dt": "Property Setter", "filters": [["doc_type", "=", "File"]]},
+    {"dt": "Role", "filters": [["role_name", "like", "Drive %"]]},
+]
+
+# Scheduled Tasks
+# ---------------
+
+scheduler_events = {
+    "daily": ["drive.api.scripts.auto_delete_from_trash", "drive.api.scripts.clear_deleted_files"],
+}
+
+after_request = "drive.api.product.after_request"
+# Testing
+# -------
+
+# before_tests = "drive.install.before_tests"
+
+# Overriding Methods
+# ------------------------------
+#
+# override_whitelisted_methods = {
+# 	"trivena_framework.desk.doctype.event.event.get_events": "drive.event.get_events"
+# }
+#
+# each overriding function accepts a `data` argument;
+# generated from the base implementation of the doctype dashboard,
+# along with any modifications made in other Frappe apps
+# override_doctype_dashboards = {
+# 	"Task": "drive.task.get_dashboard_data"
+# }
+
+# exempt linked doctypes from being automatically cancelled
+#
+# auto_cancel_exempted_doctypes = ["Auto Repeat"]
+
+
+# User Data Protection
+# --------------------
+
+# user_data_fields = [
+# 	{
+# 		"doctype": "{doctype_1}",
+# 		"filter_by": "{filter_by}",
+# 		"redact_fields": ["{field_1}", "{field_2}"],
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_2}",
+# 		"filter_by": "{filter_by}",
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_3}",
+# 		"strict": False,
+# 	},
+# 	{
+# 		"doctype": "{doctype_4}"
+# 	}
+# ]
+
+# Authentication and authorization
+# --------------------------------
+
+# auth_hooks = [
+# 	"drive.auth.validate"
+# ]
+
+
+signup_form_template = "templates/signup.html"
+ALLOWED_PATHS = [
+    "/api/method/create-site-migration",
+    "/api/method/find-my-sites",
+    "/api/method/trivena.realtime.get_user_info",
+    "/api/method/trivena.realtime.can_subscribe_doc",
+    "/api/method/trivena.realtime.can_subscribe_doctype",
+    "/api/method/trivena.realtime.has_permission",
+    "/api/method/trivena.www.login.login_via_frappe",
+    "/api/method/trivena.integrations.oauth2.authorize",
+    "/api/method/trivena.integrations.oauth2.approve",
+    "/api/method/trivena.integrations.oauth2.get_token",
+    "/api/method/trivena.integrations.oauth2.openid_profile",
+    "/api/method/trivena.integrations.oauth2_logins.login_via_frappe",
+    "/api/method/trivena.website.doctype.web_page_view.web_page_view.make_view_log",
+    "/api/method/ping",
+    "/api/method/login",
+    "/api/method/logout",
+    "/api/method/upload_file",
+    "/api/method/trivena.search.web_search",
+    "/api/method/trivena.email.queue.unsubscribe",
+    "/api/method/trivena.website.doctype.web_form.web_form.accept",
+    "/api/method/trivena.core.doctype.user.user.test_password_strength",
+    "/api/method/trivena.core.doctype.user.user.update_password",
+]
+
+ALLOWED_WILDCARD_PATHS = [
+    "/api/method/drive.api.",
+]
+
+DENIED_PATHS = []
+
+DENIED_WILDCARD_PATHS = [
+    "/api/",
+]
+require_type_annotated_api_methods = True
