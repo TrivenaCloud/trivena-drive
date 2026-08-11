@@ -21,7 +21,7 @@ export default defineConfig(async ({ mode }) => {
         lucideIcons: true,
         jinjaBootData: true,
         buildConfig: {
-          indexHtmlPath: '../drive/www/drive.html',
+          indexHtmlPath: '../trivena_drive/www/drive.html',
         },
       }),
       vue(),
@@ -29,7 +29,7 @@ export default defineConfig(async ({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
-        '@icons': path.resolve(__dirname, '../drive/public/images/icons'),
+        '@icons': path.resolve(__dirname, '../trivena_drive/public/images/icons'),
         'tailwind.config.js': path.resolve(__dirname, 'tailwind.config.js'),
         ...localFrappeUIAliases,
       },

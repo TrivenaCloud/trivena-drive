@@ -36,12 +36,12 @@ packages = [
 ]
 
 [tool.bench.frappe-dependencies]
-frappe = ">=15.0.0-dev,<=17.0.0-dev"
+trivena_framework = ">=15.0.0-dev,<=17.0.0-dev"
 
 [tool.bench.assets]
 build_dir = "./frontend"
-out_dir = "../drive/public/frontend"
-index_html_path = "../drive/www/drive.html"
+out_dir = "../trivena_drive/public/frontend"
+index_html_path = "../trivena_drive/www/drive.html"
 
 [project.urls]
 Homepage = "https://trivena.io/drive"
