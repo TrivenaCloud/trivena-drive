@@ -8,7 +8,7 @@
     "upgrade-frappeui": "cd frontend && yarn add frappe-ui@latest"
   },
   "devDependencies": {
-    "cypress": "^14.5.2",
+    "cypress": "^15.20.1",
     "cypress-file-upload": "^5.0.8"
   }
 }
